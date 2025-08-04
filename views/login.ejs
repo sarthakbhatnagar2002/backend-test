@@ -12,7 +12,6 @@
     <form action="/user/login" method="post" class="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg w-96">
       <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">Login</h1>
 
-      <!-- Username -->
       <div class="mb-4">
         <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Username
@@ -29,7 +28,6 @@
         />
       </div>
 
-      <!-- Password -->
       <div class="mb-4">
         <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Password
@@ -44,14 +42,11 @@
           placeholder="•••••••••" 
           required 
         />
-
-        <!-- Error Message -->
         <% if (errorMessage) { %>
           <p class="text-red-500 text-sm mt-2"><%= errorMessage %></p>
         <% } %>
       </div>
 
-      <!-- Submit Button -->
       <button 
         type="submit"
         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none 
