@@ -118,6 +118,18 @@ router.post(
   }
 );
 
+router.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none'
+  });
+  
+  return res.status(200).json({
+    message: 'Logged out successfully'
+  });
+});
+
 router.get('/verify', (req, res) => {
   const token = req.cookies.token;
 
