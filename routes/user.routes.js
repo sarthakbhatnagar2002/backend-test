@@ -23,24 +23,20 @@ router.post(
     .withMessage('Username must be at least 3 characters long'),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({
         errors: errors.array(),
         message: 'Invalid data',
       });
     }
-
     const { email, username, password } = req.body;
     const hashpassword = await bcrypt.hash(password, 10);
-
     try {
       const newUser = await userModel.create({
         email,
         username,
         password: hashpassword,
       });
-
       return res.status(201).json({
         message: 'User registered successfully',
         user: {
@@ -70,27 +66,22 @@ router.post(
   body('password').notEmpty().withMessage('Password is required'),
   async (req, res) => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: errors.array()[0].msg });
     }
-
     const { username, password } = req.body;
     const user = await userModel.findOne({ username });
-
     if (!user) {
       return res.status(400).json({
         message: 'Username or password is incorrect',
       });
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
         message: 'Username or password is incorrect',
       });
     }
-
     const token = jwt.sign(
       {
         userID: user._id,
@@ -100,14 +91,12 @@ router.post(
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
-
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // true on Render
       sameSite: 'none', // allows cross-origin cookies (Vercel ↔ Render)
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
-
     return res.status(200).json({
       message: 'Login successful',
       user: {
@@ -118,30 +107,36 @@ router.post(
   }
 );
 
-router.post('/logout', (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none'
-  });
-  
-  return res.status(200).json({
-    message: 'Logged out successfully'
-  });
-});
-
 router.get('/verify', (req, res) => {
   const token = req.cookies.token;
-
   if (!token) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return res.json({ user: decoded });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+// ADD THIS LOGOUT ROUTE
+router.post('/logout', (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none'
+    });
+    
+    return res.status(200).json({
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({
+      message: 'Logout failed'
+    });
   }
 });
 
