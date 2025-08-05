@@ -103,11 +103,12 @@ router.post(
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: process.env.NODE_ENV === 'production', // true on Render
+      sameSite: 'none', // allows cross-origin cookies (Vercel ↔ Render)
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
-    return res.json({
+    return res.status(200).json({
       message: 'Login successful',
       user: {
         username: user.username,
