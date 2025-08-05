@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: 'https://learnovate-main.vercel.app/',
+  origin: 'https://learnovate-main.vercel.app',
   credentials: true
 }));
 
