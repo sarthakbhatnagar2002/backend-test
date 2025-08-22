@@ -10,16 +10,29 @@ dotenv.config();
 
 connectToDB();
 
+// IMPORTANT: CORS must be the FIRST middleware
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'], 
+  credentials: true, 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  optionsSuccessStatus: 200 // For legacy browser support
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
+// Other middleware AFTER CORS
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({
-  origin: 'https://your-frontend.vercel.app',
-  credentials: true
-}));
-
 app.set('view engine', 'ejs');
+
+// Add a test route to verify CORS is working
+app.get('/test', (req, res) => {
+  res.json({ message: 'CORS is working!', timestamp: new Date() });
+});
 
 app.use('/user', userRouter);
 
